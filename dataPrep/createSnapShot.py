@@ -25,7 +25,7 @@ class snapshot:
         self.BASpread, self.volatility = 0,0
         
     def getdata(self,filepath): ## function to load data from the filepath
-        df = np.loadtxt(filepath',dtype = np.float32)
+        df = np.loadtxt(filepath,dtype = np.float32)
         return df
         
     ## This function resets the state and sets it back to the initial empty condition
@@ -56,8 +56,12 @@ class snapshot:
                         
         ## sort the buy side and sell side postings and generate current snapshot
         self.sortHeap()
+        self.calculate_state()
     
-    ## function to calculate descriptors                   
+    def calculate_state():
+        self.BASpread = max(self.sell[0]-self.buy[0],0)
+        self.volatility = self.stddev()
+
     ##function to display stuff
                     
         
