@@ -1,11 +1,13 @@
 import numpy as np
 from createSnapShot import env
 
+
 class ActionSpace():
 
-    def __init__(orderbook,num_split,side): ##num_split specifies how close the potential actions are spaced
+    def __init__(orderbook,num_split,side,multiplier): ##num_split specifies how close the potential actions are spaced
         self.snapshots = orderbook.snaps
         self.num_split = num_split
+        self.multiplier = multiplier ##multiplier for the spread
         self.side = side ## specifies if buy or sell
         self.intervalSize = orderbook.intervalSize
         self.actions_for_snaps = []
@@ -23,7 +25,7 @@ class ActionSpace():
     def generateActionSpace(self,snap):
         highest_buy = snap.buy[-1]
         lowest_sell = snap.sell[-1]
-        spread = 1.2*snap.BASpread
+        spread = self.multiplier*snap.BASpread
         potentialActions = None
         if self.side = 'buy':
             left = highest_buy - spread
