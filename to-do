@@ -1,6 +1,6 @@
 ## Add things that need to be implemented below -
 
-[1:37 AM, 2/13/2022] Anirrudh Ramesh: https://github.com/mjuchli/ctc-executioner/blob/master/notebooks/order_execution_behaviour.ipynb
-[1:38 AM, 2/13/2022] Anirrudh Ramesh: https://github.com/mjuchli/ctc-executioner/blob/master/ctc_executioner/action.py
-[1:38 AM, 2/13/2022] Anirrudh Ramesh: https://github.com/mjuchli/ctc-executioner/blob/master/ctc_executioner/action_space.py
-[1:38 AM, 2/13/2022] Anirrudh Ramesh: https://github.com/mjuchli/ctc-executioner/blob/master/docs/report.pdf
+- [a link](https://github.com/mjuchli/ctc-executioner/blob/master/notebooks/order_execution_behaviour.ipynb)
+- https://github.com/mjuchli/ctc-executioner/blob/master/ctc_executioner/action.py
+- https://github.com/mjuchli/ctc-executioner/blob/master/ctc_executioner/action_space.py
+- https://github.com/mjuchli/ctc-executioner/blob/master/docs/report.pdf
