@@ -146,7 +146,7 @@ class snapshot:
             
 
 Env = env("../data/numpydatabook1.txt",30)
-Env.orderbook_daily[3].snaps
+Env.orderbook_daily[3].snaps[3].describe()
         
                     
         
