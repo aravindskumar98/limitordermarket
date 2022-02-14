@@ -15,7 +15,9 @@ class env():
         self.load_data(filepath) ## Creates array of numpy array based on date
         self.orderbook_daily = []
         self.intervalSize = intervalSize * 60 ## in seconds
-        for data in self.data_array:
+        for i,data in enumerate(self.data_array):
+            print("Day : ",i+1)
+            print('---------')
             self.orderbook_daily.append(Orderbook(data,self.intervalSize))
 
     def load_data(self,filepath):
@@ -29,24 +31,26 @@ class Orderbook:
    
         ## Load data onto a numpy array
         self.data = data
-        print('----------------------------------------------')
         ## store the interval size/step size --> can be changed for finer control
         self.intervalSize = intervalSize
         self.tstart = self.data[0][2]
         self.tend = self.data[-1][2]
+        # print(self.tstart,self.tend)
         
         self.snaps = []
         self.generate_snaps()        
     
-
-    
     def generate_snaps(self):
         start = self.tstart
+        count = 1
         while start+self.intervalSize < self.tend:
+            print("Interval Number : ",count)
             snap = snapshot(self.data,start,self.intervalSize)
             snap.describe()
+            print("..")
             self.snaps.append(snap)
-            start+=self.intervalSize       
+            start+=self.intervalSize  
+            count+=1
 
 class snapshot:
     
@@ -68,7 +72,7 @@ class snapshot:
         self.sell, self.buy = [],[]
         self.trade_list = []
         self.sellSize, self.buySize, self.tradeSize = 0,0,0
-        print("Initialising a new Snap of the limit-book..")
+        print("..")
     
     def sortHeap(self):
         ## heap will be implemented in later updates
@@ -80,30 +84,34 @@ class snapshot:
     def trade_act(self): ## this function executes trades in the current limit order snapshot
         if not self.buy or not self.sell:
             return
-        highest_buy = self.buy[-1]
-        lowest_sell = self.sell[-1]
-        if lowest_sell <= highest_buy:
+        
+        while self.sell and self.buy and self.sell[-1][0] <= self.buy[-1][0]:
             # print(self.trade_list)
-            self.trade_list.append((highest_buy,lowest_sell))
-            self.buy.pop()
-            self.sell.pop()
+            tradeVal = min(self.buy[-1][1],self.sell[-1][1])
+            self.trade_list.append((self.buy[-1][0],self.sell[-1][0],tradeVal))
+            self.buy[-1][1]-=tradeVal
+            self.sell[-1][1]-=tradeVal
+            if self.buy[-1][1]==0:
+                self.buy.pop()
+            if self.sell[-1][1]==0:
+                self.sell.pop()
             self.tradeSize+=1
             
-            # self.sellSize-=1
-            # self.buySize-=1
-        
     def generateSnap(self):
         ## reset leftovers from the last state
         self.resetState()
         
         ## Iterate through all transactions within the intervalSize
         for row in self.data:
+            # print(row)
             if row[2] < self.startTime+self.intervalSize:
-                if row[-1]==1:
-                    self.buy.append(row[2])
+                if row[5]==0:
+                    continue ### Assuming that garbage values can be removed
+                elif row[-1]==1:
+                    self.buy.append([row[5],row[4]])
                     self.buySize+=1
                 else:
-                    self.sell.append(row[2])
+                    self.sell.append([row[5],row[4]])
                     self.sellSize+=1
                 
                 ## sort the buy side and sell side postings and generate current snapshot
@@ -117,14 +125,14 @@ class snapshot:
         trade = np.array(self.trade_list)
         buy = np.array(self.buy)
         sell = np.array(self.sell)
-        self.volatility["trade"] = np.std(trade)
-        self.volatility["buy"] = np.std(buy)
-        self.volatility["sell"] = np.std(sell)
+        self.volatility["trade"] = np.std(trade[:,0])
+        self.volatility["buy"] = np.std(buy[:,0])
+        self.volatility["sell"] = np.std(sell[:,0])
         
     
     def calculate_state(self):
         if self.buy and self.sell:
-            self.BASpread = self.sell[-1]-self.buy[-1]
+            self.BASpread = self.sell[-1][0]-self.buy[-1][0]
         self.find_volatility()
 
     ##function to display stuff
@@ -145,10 +153,8 @@ class snapshot:
         print(f"Current bid ask spread = {self.BASpread}")
             
 
-Env = env("../data/numpydatabook1.txt",30)
-Env.orderbook_daily[3].snaps[3].describe()
-        
-                    
+Env = env("../data/numpydatabook.txt",30)
+
         
 
             
